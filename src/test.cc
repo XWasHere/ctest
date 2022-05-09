@@ -18,6 +18,9 @@ namespace ctest {
         if (!test) {
             logger->cprintf(logger->err, "assertion failed: no reason given\n");
             fail();
+#ifdef __cpp_lib_unreachable
+            unreachable();
+#endif
         }
         return true;
     }
@@ -26,24 +29,36 @@ namespace ctest {
     void Test::fail(char* reason) {
         logger->cprintf(logger->err, reason);
         fail();
+#ifdef __cpp_lib_unreachable
+        unreachable();
+#endif
     }
 
     [[ noreturn ]]
     void Test::fail() {
         __result = 0;
         longjmp(__finish, 1);
+#ifdef __cpp_lib_unreachable
+        unreachable();
+#endif
     }
 
     [[ noreturn ]]
     void Test::pass(char* reason) {
         logger->cprintf(logger->info, reason);
         pass();
+#ifdef __cpp_lib_unreachable
+        unreachable();
+#endif
     }
 
     [[ noreturn ]]
     void Test::pass() {
         __result = 1;
         longjmp(__finish, 1);
+#ifdef __cpp_lib_unreachable
+        unreachable();
+#endif
     }
 
     bool Test::exec() {
