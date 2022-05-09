@@ -13,7 +13,7 @@ enum class conversion {
 
 namespace ctest {
     Logger::Logger() {
-
+        depth = 0;
     }
 
     LoggerChannel* Logger::open(FILE* fd, bool keep) {
@@ -224,7 +224,8 @@ namespace ctest {
                                 default:
                                 case conversion::NONE: {
                                     int v = va_arg(args, int);
-                                    goto cprintf_die;
+                                    ::fprintf(fd, "%i", v);
+                                    break;
                                 }
                                 case conversion::l: {
                                     long v = va_arg(args, long);

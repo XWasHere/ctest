@@ -4,5 +4,6 @@
 #include "./test.h"
 #include "./testcontroller.h"
 #include "./testio.h"
+#include "./assert.h"
 
 #endif

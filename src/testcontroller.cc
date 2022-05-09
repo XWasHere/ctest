@@ -34,7 +34,8 @@ namespace ctest {
 
         logger->cprintf(logger->info, "run test \"%s\"%>\n", instance->name);
 
-        bool result = instance->instance->run();
+        instance->instance->logger = logger;
+        bool result = instance->instance->exec();
 
         if (result) {
             logger->cprintf(logger->info, "test passed%<\n");
@@ -45,13 +46,13 @@ namespace ctest {
         return result;
     }
 
-    void TestController::run_all() {
-        unsigned int passed;
-        unsigned int failed;
+    TestingResult* TestController::run_all() {
+        unsigned int passed = 0;
+        unsigned int failed = 0;
 
         if (testc == 0) {
-            logger->cprintf(logger->err, "nothing to run, canceling");
-            return;
+            logger->cprintf(logger->err, "nothing to run, canceling\n");
+            return 0;
         }
 
         logger->cprintf(logger->info, "running all tests%>\n");
@@ -62,11 +63,21 @@ namespace ctest {
         }
 
         if (passed == 0) {
-            logger->cprintf(logger->info, "%i %s failed%<\n", failed, failed == 1 ? "tests" : "test");
+            logger->cprintf(logger->info, "%i %s failed%<\n", failed, failed == 1 ? "test" : "tests");
         } else if (failed == 0) {
-            logger->cprintf(logger->info, "%i %s passed%<\n", passed, passed == 1 ? "tests" : "test");
+            logger->cprintf(logger->info, "%i %s passed%<\n", passed, passed == 1 ? "test" : "tests");
         } else {
-            logger->cprintf(logger->info, "%i %s passed. %i %s failed%<\n", passed, failed);
+            logger->cprintf(logger->info, "%i %s passed. %i %s failed%<\n", 
+                passed, 
+                passed == 1 ? "test" : "tests", 
+                failed,
+                failed == 1 ? "test" : "tests");
         }
+
+        TestingResult* res = new TestingResult();
+        res->passedc = passed;
+        res->failedc = failed;
+
+        return res;
     }
 }

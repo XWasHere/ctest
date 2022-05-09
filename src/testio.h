@@ -26,6 +26,7 @@ namespace ctest {
         LoggerChannel* open(FILE* fd, bool keep);
         int            close(LoggerChannel* c);
 
+        [[ gnu::format(printf, 3, 4) ]]
         int cprintf(LoggerChannel* channel, char* format, ...);
         int vcprintf(LoggerChannel* channel, char* format, va_list args);
     };

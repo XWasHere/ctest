@@ -8,6 +8,12 @@
 #include "./testio.h"
 
 namespace ctest {
+    class TestingResult {
+        public:
+        unsigned int passedc;
+        unsigned int failedc;
+    };
+
     class TestInstance {
         public:
         Test* instance;
@@ -26,14 +32,14 @@ namespace ctest {
         TestController();
         ~TestController();
 
-        bool run_test(unsigned int id);
-        void run_all();
-        
+        bool           run_test(unsigned int id);
+        TestingResult* run_all();
+
         template<class TEST> void queue() {
             TestInstance* test = new TestInstance();
             test->instance     = new TEST();
             test->name         = abi::__cxa_demangle(typeid(TEST).name(), 0, 0, 0);
-            tests[testc++] = test;
+            tests[testc++]     = test;
         }
     };
 };
