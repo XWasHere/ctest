@@ -1,8 +1,13 @@
 #include <utility>
+#include <functional>
 
 #include "./test.h"
 
 namespace ctest {
+    ExpectClause<ExpectCheckNoop, void>* Test::expect() {
+        return new ExpectClause<ExpectCheckNoop, void>(this);
+    }
+
     bool Test::assert(bool test, char* reason) {
         if (!test) {
             logger->cprintf(logger->err, "assertion failed: %s\n", reason);
