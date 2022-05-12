@@ -1,10 +1,11 @@
 CXX ?= g++
-CXX_ARGS ?= -O3 -ggdb --std=c++23
+CXX_ARGS ?= -O3 -ggdb --std=c++23 -fconcepts-ts
 
 OBJS = build/lib/test.o \
        build/lib/testcontroller.o \
 	   build/lib/testio.o \
-	   build/lib/assert.o
+	   build/lib/assert.o \
+	   build/lib/testgroup.o
 
 PLATFORM_EXT = .dll
 
@@ -29,6 +30,8 @@ headers:
 	cp -f src/testcontroller.h out/include/
 	cp -f src/testio.h out/include/
 	cp -f src/assert.h out/include/
+	cp -f src/testgroup.h out/include/
+	cp -f src/meta.h out/include/
 
 out/lib/libctest.dll: $(OBJS)
 	$(CXX) $(CXX_ARGS) $(OBJS) -o out/lib/libctest.dll -fPIC -shared
@@ -44,6 +47,9 @@ build/lib/testio.o: src/testio.cc src/testio.h
 
 build/lib/assert.o: src/assert.cc src/assert.h
 	$(CXX) $(CXX_ARGS) -fpermissive -c src/assert.cc -o build/lib/assert.o
+
+build/lib/testgroup.o: src/testgroup.cc src/testgroup.h
+	$(CXX) $(CXX_ARGS) -fpermissive -c src/testgroup.cc -o build/lib/testgroup.o
 
 test: ctest test/main.cc
 	$(CXX) $(CXX_ARGS) -c test/main.cc -o build/test/main.o -Iout/include
