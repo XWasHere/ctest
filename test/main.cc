@@ -261,6 +261,99 @@ class ExpectTest : public Test {
     }
 };
 
+class GroupTest : public Test {
+    public:
+    class Group111 : public Test {
+        public:
+        bool run() {
+            pass();
+        }
+    };
+    class Group211 : public Test {
+        public:
+        bool run() {
+            fail();
+        }
+    };
+    class Group221 : public Test {
+        public:
+        bool run() {
+            pass();
+        }
+    };
+    class Group311 : public Test {
+        public:
+        bool run() {
+            fail();
+        }
+    };
+    class Group312 : public Test {
+        public:
+        bool run() {
+            pass();
+        }
+    };
+    class Group313 : public Test {
+        public:
+        bool run() {
+            fail();
+        }
+    };
+    class Group321 : public Test {
+        public:
+        bool run() {
+            pass();
+        }
+    };
+    class Group322 : public Test {
+        public:
+        bool run() {
+            fail();
+        }
+    };
+    class Group323 : public Test {
+        public:
+        bool run() {
+            pass();
+        }
+    };
+    class Group331 : public Test {
+        public:
+        bool run() {
+            fail();
+        }
+    };
+    class Group332 : public Test {
+        public:
+        bool run() {
+            pass();
+        }
+    };
+    class Group333 : public Test {
+        public:
+        bool run() {
+            fail();
+        }
+    };
+
+    bool run() {
+        TestController tc = TestController();
+        tc.logger->depth = logger->depth;
+
+        tc.queue<group_of<Group111>>();
+        tc.queue<group_of<Group211, Group221>>();
+        tc.queue<group_of<
+            group_of<Group311, Group312, Group313>,
+            group_of<Group321, Group322, Group323>,
+            group_of<Group331, Group332, Group333>
+        >>();
+
+        tc.run_all();
+
+        pass(); // unconditionally pass, i have no idea how to test that this works beyond sigsegv
+    }
+};
+
 int main() {
     TestController tc = TestController();
 
@@ -269,6 +362,7 @@ int main() {
     tc.queue<QueueTest>();
     tc.queue<AssertTest>();
     tc.queue<ExpectTest>();
+    tc.queue<GroupTest>();
 
     tc.run_all();
 }
