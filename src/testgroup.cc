@@ -18,7 +18,7 @@ namespace ctest {
     bool TestGroup::run_test(unsigned int id) {
         TestInstance* instance = this->tests[id];
 
-        logger->cprintf(logger->info, "run test \"%s\"%>\n", instance->name);
+        logger->cprintf(logger->info, "run test \"%s\"%>\n", instance->instance->name);
 
         instance->instance->logger = logger;
         bool result = instance->instance->exec();
@@ -36,14 +36,18 @@ namespace ctest {
         unsigned int passed = 0;
         unsigned int failed = 0;
 
-        if (testc == 0) {
+        if (__childlen == 0) {
             logger->cprintf(logger->err, "nothing to run, canceling\n");
             return 0;
         }
 
-        for (int i = 0; i < testc; i++) {
-            if (run_test(i)) passed++;
+        for (int i = 0; i < __childlen; i++) {
+            TestingResult* res = run_child(i);
+
+            if (res->passed) passed++;
             else             failed++;
+
+            delete res;
         }
 
         if (passed == 0) {

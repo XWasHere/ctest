@@ -7,5 +7,6 @@
 #include "./testio.h"
 #include "./assert.h"
 #include "./meta.h"
+#include "./expect.h"
 
 #endif

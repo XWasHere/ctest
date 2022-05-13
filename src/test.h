@@ -2,12 +2,24 @@
 #define CTEST_TEST_H
 
 #include <type_traits>
+#include <typeinfo>
 #include <functional>
 #include <setjmp.h>
 #include "./testio.h"
 
 namespace ctest {
     class Test;
+
+    class TestingResult {
+        public:
+        Test* test;
+
+        bool passed;
+        int  result;
+        
+        unsigned int passedc;
+        unsigned int failedc;
+    };
 
     template<template<class OWNER, class ...> class FOR, class NEXT_TYPE, class ...CARGS> class ExpectClause;
 
@@ -91,10 +103,24 @@ namespace ctest {
 
     class Test {
         public: 
-        bool    __result;
+        bool    __passed;
+        int     __result;
         jmp_buf __finish;
 
+        // embedded programming nightmare
+        unsigned int __childlen;
+        Test**       __children;
+
+        char* name;
+
+        TestingResult* result;
+
         Logger* logger;
+
+        Test();
+        ~Test();
+
+        void __children_extend(unsigned int count);
 
         bool assert(bool test, char* fail_text);
         bool assert(bool test);
@@ -111,14 +137,29 @@ namespace ctest {
         [[ noreturn ]]
         void pass();
 
+        Test* operator[](char* child);
+        
         // dear god
+#ifndef WIGNORE_CTEST_EXPECT_OVERHEAD
+        [[ deprecated("expect has a LOT of overhead, CTEST_EXPECT should be used instead") ]]
+#endif
         ExpectClause<ExpectCheckNoop, void>* expect();
 
-        // exec sets up crap
-        virtual bool exec();
+        // runs a child by either a pointer or an index
+        TestingResult* run_child(Test*        test);
+        TestingResult* run_child(unsigned int test);
+        
+        // exec sets up crap and runs the test
+        virtual TestingResult* exec();
 
-        // run actually runs the test
+        // run just runs the test
         virtual bool run() = 0;
+
+        // add a child test
+        template<class TEST> void add_child()           { add_child(new TEST()); }
+        template<class TEST> void add_child(char* name) { add_child(new TEST(), name); }
+        void add_child(Test* test);
+        void add_child(Test* test, char* name);
     };
 };
 

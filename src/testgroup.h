@@ -3,18 +3,16 @@
 
 #include <utility>
 #include <typeinfo>
-#include <cxxabi.h>
 
 #include "./meta.h"
 #include "./test.h"
 
 namespace ctest {
-    class TestingResult;
+    class TestInstance;
 
     class TestInstance {
         public:
         Test* instance;
-        char* name;
     };
 
     class TestGroup : public Test {
@@ -28,15 +26,12 @@ namespace ctest {
         bool           run_test(unsigned int id);
         TestingResult* run_all();
 
-        template<class TEST> void queue() {
-            queue<TEST>(new TEST());
+        template<class TEST> inline void queue() {
+            add_child<TEST>();
         }
 
-        template<class TEST> void queue(TEST* t) {
-            TestInstance* test = new TestInstance();
-            test->instance     = t;
-            test->name         = abi::__cxa_demangle(typeid(TEST).name(), 0, 0, 0);
-            tests[testc++]     = test;
+        template<class TEST> inline void queue(TEST* t) {
+            add_child(t);
         }
 
         bool run();
@@ -52,23 +47,23 @@ namespace ctest {
     template<class TEST, class NEXT> class __group_of_int : public TestGroup {
         public:
         template<class T = TEST, class N = NEXT> requires(!std::is_same<N, void>::value && !__is_group_of<N>) 
-        static void group_of_queue(TestGroup* g) {
+        inline static void group_of_queue(TestGroup* g) {
             g->queue<TEST>();
             g->queue<NEXT>();
         }
 
         template<class T = TEST, class N = NEXT> requires(!std::is_same<N, void>::value && __is_group_of<N>)
-        static void group_of_queue(TestGroup* g) {
+        inline static void group_of_queue(TestGroup* g) {
             g->queue<TEST>();
             NEXT::group_of_queue(g);
         }
 
         template<class T = TEST, class N = NEXT> requires(std::is_same<N, void>::value) 
-        static void group_of_queue(TestGroup* g) {
+        inline static void group_of_queue(TestGroup* g) {
             g->queue<TEST>();
         }
 
-        __group_of_int() {
+        inline __group_of_int() {
             group_of_queue(this);
         }
     };

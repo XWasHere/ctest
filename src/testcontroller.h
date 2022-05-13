@@ -11,12 +11,6 @@
 namespace ctest {
     class TestGroup;
 
-    class TestingResult {
-        public:
-        unsigned int passedc;
-        unsigned int failedc;
-    };
-
     class TestController {
         public:
         LoggerChannel* out_info;
@@ -31,12 +25,16 @@ namespace ctest {
         bool           run_test(unsigned int id);
         TestingResult* run_all();
 
-        template<class TEST> void queue() {
-            root->queue<TEST>();
+        template<class TEST> inline void queue() {
+            root->add_child<TEST>();
         }
 
-        template<class TEST> void queue(TEST* t) {
-            root->queue<TEST>(t);
+        inline void queue(Test* t) {
+            root->add_child(t);
+        }
+
+        inline void queue(Test* t, char* name) {
+            root->add_child(t, name);
         }
     };
 };
