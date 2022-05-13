@@ -32,6 +32,7 @@ headers:
 	cp -f src/assert.h out/include/
 	cp -f src/testgroup.h out/include/
 	cp -f src/meta.h out/include/
+	cp -f src/expect.h out/include/
 
 out/lib/libctest.dll: $(OBJS)
 	$(CXX) $(CXX_ARGS) $(OBJS) -o out/lib/libctest.dll -fPIC -shared
