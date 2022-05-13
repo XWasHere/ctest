@@ -1,3 +1,5 @@
+#define CTEST_NNS_EXPECT
+
 #include <ctest.h>
 
 using namespace ctest;
@@ -149,9 +151,11 @@ class ExpectTest : public Test {
         class Fails : public ctest::Test {
             public:
             bool run() {
-                expect()->exception<Exception1>()->in([]{
-                    
-                });
+                EXPECT({
+                    EXPECT_EXCEPTION(Exception1, {
+                        
+                    })
+                })
 
                 pass();
             }
@@ -160,9 +164,11 @@ class ExpectTest : public Test {
         class Passes : public ctest::Test {
             public:
             bool run() {
-                expect()->exception<Exception1>()->in([]{
-                    throw Exception1();
-                });
+                EXPECT({
+                    EXPECT_EXCEPTION(Exception1, {
+                        throw Exception1();
+                    })
+                })
 
                 pass();
             }
@@ -172,23 +178,30 @@ class ExpectTest : public Test {
             public:
             bool run() {
                 try {
-                    expect()->exception<Exception1>()->in([]{
-                        throw Exception2();
-                    });
+                    EXPECT({
+                        EXPECT_EXCEPTION(Exception1, {
+                            throw Exception2();
+                        })
+                    })
                 } catch (Exception2& e) {
                     logger->cprintf(logger->info, "\"fake crash\"\n");
+                    pass();
                 }
 
-                pass();
+                fail();
             }
         };
 
         class Multi11 : public ctest::Test {
             public:
             bool run() {
-                expect()->exception<Exception1>()->exception<Exception2>()->in([]{
-                    throw Exception1();
-                });
+                EXPECT({
+                    EXPECT_EXCEPTION(Exception1, {
+                        EXPECT_EXCEPTION(Exception2, {
+                            throw Exception1();
+                        })
+                    })
+                })
 
                 pass();
             }
@@ -197,9 +210,13 @@ class ExpectTest : public Test {
         class Multi12 : public ctest::Test {
             public:
             bool run() {
-                expect()->exception<Exception1>()->exception<Exception2>()->in([]{
-                    throw Exception2();
-                });
+                EXPECT({
+                    EXPECT_EXCEPTION(Exception1, {
+                        EXPECT_EXCEPTION(Exception2, {
+                            throw Exception2();
+                        })
+                    })
+                })
 
                 pass();
             }
@@ -208,9 +225,13 @@ class ExpectTest : public Test {
         class Multi21 : public ctest::Test {
             public:
             bool run() {
-                expect()->exception<Exception2>()->exception<Exception1>()->in([]{
-                    throw Exception1();
-                });
+                EXPECT({
+                    EXPECT_EXCEPTION(Exception2, {
+                        EXPECT_EXCEPTION(Exception1, {
+                            throw Exception1();
+                        })
+                    })
+                })
 
                 pass();
             }
@@ -219,9 +240,13 @@ class ExpectTest : public Test {
         class Multi22 : public ctest::Test {
             public:
             bool run() {
-                expect()->exception<Exception2>()->exception<Exception1>()->in([]{
-                    throw Exception2();
-                });
+                EXPECT({
+                    EXPECT_EXCEPTION(Exception2, {
+                        EXPECT_EXCEPTION(Exception1, {
+                            throw Exception2();
+                        })
+                    })
+                })
 
                 pass();
             }
